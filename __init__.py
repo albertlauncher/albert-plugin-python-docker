@@ -7,15 +7,15 @@ import docker
 from albert import *
 
 md_iid = "3.0"
-md_version = "4.0"
+md_version = "4.1"
 md_name = "Docker"
 md_description = "Manage docker images and containers"
 md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-docker"
-md_authors = "@manuelschneid3r"
-md_maintainers = ["@manuelschneid3r"]
-md_bin_dependencies = "docker"
-md_lib_dependencies = "docker"
+md_authors = ["@ManuelSchneid3r"]
+md_maintainers = ["@ManuelSchneid3r"]
+md_bin_dependencies = ["docker"]
+md_lib_dependencies = ["docker"]
 
 
 class Plugin(PluginInstance, TriggerQueryHandler):
