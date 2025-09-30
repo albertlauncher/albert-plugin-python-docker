@@ -6,7 +6,7 @@ from pathlib import Path
 import docker
 from albert import *
 
-md_iid = "3.0"
+md_iid = "4.0"
 md_version = "4.1"
 md_name = "Docker"
 md_description = "Manage docker images and containers"
@@ -21,11 +21,12 @@ md_lib_dependencies = ["docker"]
 class Plugin(PluginInstance, TriggerQueryHandler):
     # Global query handler not applicable, queries take seconds sometimes
 
+    icon_blue = Path(__file__).parent / "running.svg"
+    icon_gray = Path(__file__).parent / "stopped.svg"
+
     def __init__(self):
         PluginInstance.__init__(self)
         TriggerQueryHandler.__init__(self)
-        self.icon_urls_running = [f"file:{Path(__file__).parent}/running.png"]
-        self.icon_urls_stopped = [f"file:{Path(__file__).parent}/stopped.png"]
         self.client = None
 
     def synopsis(self, query):
@@ -34,18 +35,24 @@ class Plugin(PluginInstance, TriggerQueryHandler):
     def defaultTrigger(self):
         return "d "
 
+    def makeContainerIcon(self, running: bool):
+        return makeComposedIcon(makeImageIcon(self.icon_blue if running else self.icon_gray),
+                                makeGraphemeIcon("📦"))
+
     def handleTriggerQuery(self, query):
         items = []
 
         if not self.client:
             try:
+
                 self.client = docker.from_env()
             except Exception as e:
                 items.append(StandardItem(
                     id='except',
                     text="Failed starting docker client",
                     subtext=str(e),
-                    iconUrls=self.icon_urls_running,
+                    iconFactory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
+                                                         makeGraphemeIcon("⚠️"))
                 ))
                 return items
 
@@ -71,7 +78,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                         id=container.id,
                         text="%s (%s)" % (container.name, ", ".join(container.image.tags)),
                         subtext="Container: %s" % container.id,
-                        iconUrls=self.icon_urls_running if container.status == 'running' else self.icon_urls_stopped,
+                        iconFactory=lambda: self.makeContainerIcon(container.status == 'running'),
                         actions=actions
                     ))
 
@@ -82,7 +89,8 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                             id=image.short_id,
                             text=", ".join(image.tags),
                             subtext="Image: %s" % image.id,
-                            iconUrls=self.icon_urls_stopped,
+                            iconFactory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
+                                                                 makeGraphemeIcon("💿")),
                             actions=[
                                 # Action("run", "Run with command: %s" % query.string,
                                 #        lambda i=image, s=query.string: client.containers.run(i, s)),
