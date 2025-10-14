@@ -51,7 +51,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                     id='except',
                     text="Failed starting docker client",
                     subtext=str(e),
-                    iconFactory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
+                    icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
                                                          makeGraphemeIcon("⚠️"))
                 ))
                 return items
@@ -78,7 +78,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                         id=container.id,
                         text="%s (%s)" % (container.name, ", ".join(container.image.tags)),
                         subtext="Container: %s" % container.id,
-                        iconFactory=lambda: self.makeContainerIcon(container.status == 'running'),
+                        icon_factory=lambda: self.makeContainerIcon(container.status == 'running'),
                         actions=actions
                     ))
 
@@ -89,7 +89,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                             id=image.short_id,
                             text=", ".join(image.tags),
                             subtext="Image: %s" % image.id,
-                            iconFactory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
+                            icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
                                                                  makeGraphemeIcon("💿")),
                             actions=[
                                 # Action("run", "Run with command: %s" % query.string,
