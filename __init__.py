@@ -96,25 +96,24 @@ class Plugin(PluginInstance, RankedQueryHandler):
                     )
 
             for image in reversed(self.client.images.list()):
-                for tag in sorted(image.tags, key=len):  # order by resulting score
-                    if match := matcher.match(tag):
-                        rank_items.append(
-                            RankItem(
-                                StandardItem(
-                                    id=image.short_id,
-                                    text=", ".join(image.tags),
-                                    subtext="Image: %s" % image.id,
-                                    icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
-                                                                         makeGraphemeIcon("💿")),
-                                    actions=[
-                                        # Action("run", "Run with command: %s" % query.string,
-                                        #        lambda i=image, s=query.string: client.containers.run(i, s)),
-                                        Action("rmi", "Remove image", lambda i=image: i.remove())
-                                    ]
-                                ),
-                                match
-                            )
+                if match := matcher.match(image.tags):
+                    rank_items.append(
+                        RankItem(
+                            StandardItem(
+                                id=image.short_id,
+                                text=", ".join(image.tags),
+                                subtext="Image: %s" % image.id,
+                                icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
+                                                                     makeGraphemeIcon("💿")),
+                                actions=[
+                                    # Action("run", "Run with command: %s" % query.string,
+                                    #        lambda i=image, s=query.string: client.containers.run(i, s)),
+                                    Action("rmi", "Remove image", lambda i=image: i.remove())
+                                ]
+                            ),
+                            match
                         )
+                    )
         except Exception as e:
             warning(str(e))
             self.client = None
