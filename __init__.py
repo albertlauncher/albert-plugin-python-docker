@@ -39,8 +39,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
         return "d "
 
     def makeContainerIcon(self, running: bool):
-        return makeComposedIcon(makeImageIcon(self.icon_blue if running else self.icon_gray),
-                                makeGraphemeIcon("📦"))
+        return Icon.composed(Icon.image(self.icon_blue if running else self.icon_gray), Icon.grapheme("📦"))
 
     def rankItems(self, ctx):
         rank_items = []
@@ -55,8 +54,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
                             id='except',
                             text="Failed starting docker client",
                             subtext=str(e),
-                            icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
-                                                                  makeGraphemeIcon("⚠️"))
+                            icon_factory=lambda: Icon.composed(Icon.image(self.icon_blue), Icon.grapheme("⚠️"))
                         ),
                         0
                     )
@@ -103,8 +101,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
                                 id=image.short_id,
                                 text=", ".join(image.tags),
                                 subtext="Image: %s" % image.id,
-                                icon_factory=lambda: makeComposedIcon(makeImageIcon(self.icon_blue),
-                                                                     makeGraphemeIcon("💿")),
+                                icon_factory=lambda: Icon.composed(Icon.image(self.icon_blue), Icon.grapheme("💿")),
                                 actions=[
                                     # Action("run", "Run with command: %s" % query.string,
                                     #        lambda i=image, s=query.string: client.containers.run(i, s)),
