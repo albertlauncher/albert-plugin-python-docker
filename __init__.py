@@ -10,7 +10,7 @@ import docker
 from albert import *
 
 md_iid = "5.0"
-md_version = "4.1.1"
+md_version = "4.1.2"
 md_name = "Docker"
 md_description = "Manage docker images and containers"
 md_license = "MIT"
