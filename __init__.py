@@ -9,7 +9,7 @@ from pathlib import Path
 import docker
 from albert import *
 
-md_iid = "5.0"
+md_iid = "6.0"
 md_version = "4.1.2"
 md_name = "Docker"
 md_description = "Manage docker images and containers"
@@ -21,7 +21,7 @@ md_bin_dependencies = ["docker"]
 md_lib_dependencies = ["docker"]
 
 
-class Plugin(PluginInstance, RankedQueryHandler):
+class Plugin(PluginInstance, GeneratorQueryHandler):
     # Global query handler not applicable, queries take seconds sometimes
 
     icon_blue = Path(__file__).parent / "running.svg"
@@ -29,7 +29,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
 
     def __init__(self):
         PluginInstance.__init__(self)
-        RankedQueryHandler.__init__(self)
+        GeneratorQueryHandler.__init__(self)
         self.client = None
 
     def synopsis(self, query):
@@ -41,7 +41,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
     def makeContainerIcon(self, running: bool):
         return Icon.composed(Icon.image(self.icon_blue if running else self.icon_gray), Icon.grapheme("📦"))
 
-    def rankItems(self, ctx):
+    def items(self, ctx: QueryContext):
         rank_items = []
 
         if not self.client:
@@ -115,4 +115,4 @@ class Plugin(PluginInstance, RankedQueryHandler):
             warning(str(e))
             self.client = None
 
-        return rank_items
+        yield from self.lazySort(rank_items, ctx.usage_scoring)
